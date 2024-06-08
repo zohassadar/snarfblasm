@@ -1,15 +1,38 @@
-﻿using System;
+﻿﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Forms;
 using System.IO;
+using System.Runtime.InteropServices.JavaScript;
 using snarfblasm;
 using Romulus.Patch;
 
 namespace snarfblasm
 {
+
+public partial class MyClass
+{
+    [JSExport]
+    internal static string Greeting()
+    {
+        // language=html
+        var text =
+        $"""
+        <div>
+            <h1>Hello, World! Greetings from WASM!</h1>
+            <p>Listening at {GetHRef()}</p>
+        </div>
+        """;
+        Console.WriteLine(text);
+        return text;
+    }
+
+    [JSImport("window.location.href", "main.js")]
+    internal static partial string GetHRef();
+}
+
     static class Program
     {
+
         static ProgramSwitches switches;
         /// <summary>
         /// The main entry point for the application.
@@ -163,7 +186,7 @@ namespace snarfblasm
             //    asm.AllowInvalidOpcodes = allowInvalid.Value;
             if (switches.DotOptional != null)
                 asm.RequireDotOnDirectives = (switches.DotOptional == OnOffSwitch.OFF);
-            
+
         }
         private static byte[] CreateIPSFile(byte[] output, IList<Romulus.PatchSegment> segments) {
             var ips = new IPS.Builder();
@@ -279,7 +302,7 @@ namespace snarfblasm
 
         private static bool ProcessSwitch(string arg, out bool error) {
             error = false;
-            
+
             // Parse out switch name and parameter, and remove leading "-"
             string switchName;
             string switchValue = null;
@@ -466,9 +489,9 @@ namespace snarfblasm
         private static void ParseOffset(string value, out bool invalid) {
             invalid = false;
 
-            if (value.Length == 0) { 
-                invalid = true; 
-                return; 
+            if (value.Length == 0) {
+                invalid = true;
+                return;
             }
 
             bool hex = false;
@@ -505,15 +528,15 @@ namespace snarfblasm
         #endregion
 
 
-        const string HelpText = 
+        const string HelpText =
 @"snarfblASM 6502 assembler - syntax
     snarfblasm sourceFile [destFile] [switches]
-    
+
     switches:
         -CHECKING:OFF/ON/SIGNED
             Overflow checking in expressions
         -OFFSET:value
-            value should be a decimal, $hex, or 0xhex offset to 
+            value should be a decimal, $hex, or 0xhex offset to
             patch the dest file
         -DOT[:OFF/ON]
             Optional dots are enabled for directives (ON)
@@ -564,38 +587,12 @@ namespace snarfblasm
             #region IFileSystem Members
 
             public string GetFileText(string filename) {
-                if (filename.Equals(Psuedo_Form, StringComparison.InvariantCultureIgnoreCase)) {
-                    return snarfblasm.TextForm.GetText();
-                } else if (filename.Equals(Pseudo_Clip, StringComparison.InvariantCultureIgnoreCase)) {
-                    return Clipboard.ContainsText() ? Clipboard.GetText() : string.Empty;
-                } else {
-                    return System.IO.File.ReadAllText(filename);
-                }
+                return "heh";
             }
 
 
             public void WriteFile(string filename, byte[] data) {
-                if (filename.Equals(Psuedo_Form, StringComparison.InvariantCultureIgnoreCase)) {
-                    TextForm.GetText(Romulus.Hex.FormatHex(data));
-                } else if (filename.Equals(Pseudo_Clip, StringComparison.InvariantCultureIgnoreCase)) {
-                    if (data.Length == 0)
-                        Clipboard.SetText(" ");
-                    else
-                        Clipboard.SetText(Romulus.Hex.FormatHex(data));
-                } else {
-                    // Derp - switches.PatchOffset shouldn't be handled here
-
-                    ////if (switches.PatchOffset == null) {
-                        File.WriteAllBytes(filename, data);
-                    ////} else {
-                    ////    using (var file = File.Open(filename, FileMode.Open)) {
-                    ////        file.Seek(switches.PatchOffset.Value, SeekOrigin.Begin);
-
-                    ////        BinaryWriter w = new BinaryWriter(file);
-                    ////        w.Write(data);
-                    ////    }
-                    ////}
-                }
+                return;
             }
 
             #endregion
