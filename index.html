@@ -2,18 +2,25 @@
 <!--  Licensed to the .NET Foundation under one or more agreements. -->
 <!-- The .NET Foundation licenses this file to you under the MIT license. -->
 <html>
+    <head>
+        <title>Patchmaker</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="modulepreload" href="./main.js" />
+        <link rel="modulepreload" href="./dotnet.js" />
+    </head>
 
-<head>
-  <title>HelloDotnetWasm</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="modulepreload" href="./main.js" />
-  <link rel="modulepreload" href="./dotnet.js" />
-</head>
-
-<body>
-  <main id="out"></main>
-  <script type='module' src="./main.js"></script>
-</body>
-
+    <body>
+        <main id="out"></main>
+        <script type="module" src="./main.js"></script>
+        <label for="sourceBox">Put assembly here:</label>
+        <textarea id="sourceBox" name="sourceBox" rows="20" cols="80">
+  .patch $0010
+  .org $8000
+  lda $33
+  sta $44
+  </textarea
+        >
+        <button name="button" id="buttonForCode">Press</button>
+    </body>
 </html>
