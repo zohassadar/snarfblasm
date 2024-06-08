@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<!--  Licensed to the .NET Foundation under one or more agreements. -->
+<!-- The .NET Foundation licenses this file to you under the MIT license. -->
+<html>
+    <head>
+        <title>snarfblasm</title>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="modulepreload" href="./main.js" />
+        <link rel="modulepreload" href="./dotnet.js" />
+    </head>
+    <style>
+        body {
+            display: block;
+            flex-direction: column;
+        }
+        .buttonBox {
+            display: grid;
+        }
+    </style>
+    <body>
+        <script type="module" src="./main.js"></script>
+        <label for="filenameBox">Filename:</label>
+        <input id="filenameBox" value="patch.ips" />
+        <br />
+        <label for="sourceBox">Source:</label>
+        <textarea id="sourceBox" name="sourceBox" rows="20" cols="80">
+        </textarea>
+        <div class="buttons">
+            <button name="button" id="buttonForCode">Assemble</button>
+            <button name="button" id="buttonForLink">GetLink</button>
+        </div>
+        <p>
+            Built with
+            <a href="https://github.com/snarfblam/snarfblasm">snarfblasm</a>
+        </p>
+    </body>
+</html>

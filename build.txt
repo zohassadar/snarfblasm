@@ -1,0 +1,2 @@
+dotnet publish snarfblasm.csproj --configuration production
+mv bin/production/net7.0/browser-wasm/AppBundle/* site/
