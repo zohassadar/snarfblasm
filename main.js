@@ -21,7 +21,8 @@ setModuleImports("main.js", {
 
 const config = getConfig();
 const exports = await getAssemblyExports(config.mainAssemblyName);
-const html = exports.snarfblasm.MyClass.Greeting();
+const testPatch = ".patch $0010\n.org $8000\nlda $12\nsta $34";
+const html = exports.snarfblasm.Program.Greeting(testPatch);
 console.log(html);
 
 

@@ -9,29 +9,34 @@ using Romulus.Patch;
 namespace snarfblasm
 {
 
-public partial class MyClass
-{
+    static partial class Program
+    {
+
+const string TestPatch =
+@"
+.patch $0010
+.org $8000
+lda $17
+sta $18
+
+";
     [JSExport]
-    internal static string Greeting()
+    internal static byte[] Greeting(string source)
     {
-        // language=html
-        var text =
-        $"""
-        <div>
-            <h1>Hello, World! Greetings from WASM!</h1>
-            <p>Listening at {GetHRef()}</p>
-        </div>
-        """;
-        Console.WriteLine(text);
-        return text;
+        Assembler asm = new Assembler("test.ips", source, fileSystem);
+        asm.OverflowChecking = switches.Checking ?? OverflowChecking.None;
+        AddressLabels asmLabels = new AddressLabels();
+        asm.Labels = asmLabels;
+        asm.RequireColonOnLabels = false;
+        asm.RequireDotOnDirectives = false;
+        asm.PhaseComplete += new EventHandler<Assembler.PhaseEventArgs>(asm_PhaseComplete);
+        asm.PhaseStarted += new EventHandler<Assembler.PhaseEventArgs>(asm_PhaseStarted);
+        SetAssemblerOptions(asm);
+
+        var output = asm.Assemble();
+        var ipsFile = CreateIPSFile(output, asm.GetPatchSegments());
+        return ipsFile;
     }
-
-    [JSImport("window.location.href", "main.js")]
-    internal static partial string GetHRef();
-}
-
-    static class Program
-    {
 
         static ProgramSwitches switches;
         /// <summary>
@@ -97,13 +102,10 @@ public partial class MyClass
 
 
 
-        private static void RunAssembler() {
-            if (!FileReader.IsPseudoFile(sourceFile) && !fileSystem.FileExists(sourceFile)) {
-                Console.WriteLine("Error: Source file does not exist.");
-                return;
-            }
+        private static byte[] RunAssembler() {
 
-            Assembler asm = new Assembler(Path.GetFileName(sourceFile), fileSystem.GetFileText(sourceFile), fileSystem);
+            // Assembler asm = new Assembler(Path.GetFileName(sourceFile), fileSystem.GetFileText(sourceFile), fileSystem);
+            Assembler asm = new Assembler("test.ips", TestPatch, fileSystem);
             asm.OverflowChecking = switches.Checking ?? OverflowChecking.None;
             AddressLabels asmLabels = new AddressLabels();
             asm.Labels = asmLabels;
@@ -118,14 +120,10 @@ public partial class MyClass
             SetAssemblerOptions(asm);
 
             var output = asm.Assemble();
-            if (output == null) {
-                ShowErrors(asm.GetErrors());
-            } else {
-                WriteAssemblerOutput(asm, output);
-            }
+                return WriteAssemblerOutput(asm, output);
         }
 
-        private static void WriteAssemblerOutput(Assembler asm, byte[] output) {
+        private static byte[] WriteAssemblerOutput(Assembler asm, byte[] output) {
             bool isPseudoFile;
             bool isIPS = asm.HasPatchSegments;
             string outputExtension = isIPS ? ".ips" : ".bin";
@@ -152,27 +150,14 @@ public partial class MyClass
             }
 
 
-            if (isIPS) {
                 if (switches.PatchOffset != null) {
                     Console.WriteLine("Warning: Output type is IPS file. Offset argument will be ignored.");
                 }
 
                 var ipsFile = CreateIPSFile(output, asm.GetPatchSegments());
+                return ipsFile;
                 fileSystem.WriteFile(destFile, ipsFile);
                 Console.WriteLine(ipsFile.Length.ToString() + " bytes written to " + destFile);
-            } else if (switches.PatchOffset == null) { // .BIN file
-                fileSystem.WriteFile(destFile, output);
-                ////File.WriteAllBytes(destFile, output);
-                Console.WriteLine(output.Length.ToString() + " bytes written to " + destFile);
-            } else { // Patch into another file
-                using (var file = new FileStream(destFile, FileMode.Open, FileAccess.Write)) {
-                    file.Seek((int)switches.PatchOffset, SeekOrigin.Begin);
-                    file.Write(output, 0, output.Length);
-
-                    Console.WriteLine(output.Length.ToString() + " bytes written to " + destFile + " at offset 0x" + ((int)switches.PatchOffset).ToString());
-                }
-
-            }
         }
 
         private static void SetAssemblerOptions(Assembler asm) {

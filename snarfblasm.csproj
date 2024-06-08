@@ -15,7 +15,8 @@
     <WasmMainJSPath>main.js</WasmMainJSPath>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 
-
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <WasmEmitSymbolMap>false</WasmEmitSymbolMap>
 
     <StartupObject>
     </StartupObject>
