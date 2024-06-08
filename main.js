@@ -6,29 +6,27 @@ import { dotnet } from './dotnet.js';
 const is_browser = typeof window != 'undefined';
 if (!is_browser) throw new Error(`Expected to be running in a browser`);
 
+
+try {
+    const url = new URL(document.location.href);
+    const fragment = url.hash.slice(1);
+    if (fragment) {
+        const [filename, source] = JSON.parse(atob(fragment));
+        document.getElementById('filenameBox').value = filename;
+        document.getElementById('sourceBox').innerHTML = source;
+    }
+} catch (exc) {
+    console.log(`Unable to load source: ${exc}`);
+}
+
 const { setModuleImports, getAssemblyExports, getConfig, runMainAndExit } =
     await dotnet
         .withDiagnosticTracing(false)
         .withApplicationArgumentsFromQuery()
         .create();
 
-setModuleImports('main.js', {
-    window: {
-        location: {
-            href: () => globalThis.window.location.href,
-        },
-    },
-});
-
 const config = getConfig();
 const exports = await getAssemblyExports(config.mainAssemblyName);
-// const testPatch = '.patch $0010\n.org $8000\nlda $12\nsta $6A';
-// const html = exports.snarfblasm.Program.Greeting(testPatch);
-// console.log(html);
-
-// document.getElementById('out').innerHTML = `${html}`;
-await runMainAndExit(config.mainAssemblyName, ['dotnet', 'is', 'great!']);
-
 
 /* FileSaver.js (source: http://purl.eligrey.com/github/FileSaver.js/blob/master/src/FileSaver.js)
  * A saveAs() FileSaver implementation.
@@ -177,13 +175,20 @@ var saveAs =
             this,
     );
 
-
-function doAction() {
-    console.log(document.getElementById('sourceBox').innerHTML);
+function createLink() {
+    const filename = document.getElementById('filenameBox').value;
     const source = document.getElementById('sourceBox').value;
-    const patch = exports.snarfblasm.Program.Greeting(source);
-    // document.getElementById('sourceBox').innerHTML = patch;
-    saveAs(new Blob([patch]), "filename.ips");
+    const fragment = btoa(JSON.stringify([filename, source]));
+    window.location = `${window.location.href.split('#')[0]}#${fragment}`;
 }
 
-document.getElementById('buttonForCode').onclick = doAction;
+function assemblePatch() {
+    const filename = document.getElementById('filenameBox').value;
+    const source = document.getElementById('sourceBox').value;
+    const patch = exports.snarfblasm.Program.AssemblePatch(source);
+    // document.getElementById('sourceBox').innerHTML = patch;
+    saveAs(new Blob([patch]), filename);
+}
+
+document.getElementById('buttonForCode').onclick = assemblePatch;
+document.getElementById('buttonForLink').onclick = createLink;

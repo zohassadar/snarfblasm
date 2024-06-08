@@ -3,24 +3,36 @@
 <!-- The .NET Foundation licenses this file to you under the MIT license. -->
 <html>
     <head>
-        <title>Patchmaker</title>
+        <title>snarfblasm</title>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="modulepreload" href="./main.js" />
         <link rel="modulepreload" href="./dotnet.js" />
     </head>
-
+    <style>
+        body {
+            display: block;
+            flex-direction: column;
+        }
+        .buttonBox {
+            display: grid;
+        }
+    </style>
     <body>
-        <main id="out"></main>
         <script type="module" src="./main.js"></script>
-        <label for="sourceBox">Put assembly here:</label>
+        <label for="filenameBox">Filename:</label>
+        <input id="filenameBox" value="patch.ips" />
+        <br />
+        <label for="sourceBox">Source:</label>
         <textarea id="sourceBox" name="sourceBox" rows="20" cols="80">
-  .patch $0010
-  .org $8000
-  lda $33
-  sta $44
-  </textarea
-        >
-        <button name="button" id="buttonForCode">Press</button>
+        </textarea>
+        <div class="buttons">
+            <button name="button" id="buttonForCode">Assemble</button>
+            <button name="button" id="buttonForLink">GetLink</button>
+        </div>
+        <p>
+            Built with
+            <a href="https://github.com/snarfblam/snarfblasm">snarfblasm</a>
+        </p>
     </body>
 </html>

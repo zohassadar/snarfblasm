@@ -12,31 +12,24 @@ namespace snarfblasm
     static partial class Program
     {
 
-const string TestPatch =
-@"
-.patch $0010
-.org $8000
-lda $17
-sta $18
+        [JSExport]
+        internal static byte[] AssemblePatch(string source)
+        {
+            // steps taken from below
+            Assembler asm = new Assembler("placeholder", source, fileSystem);
+            asm.OverflowChecking = switches.Checking ?? OverflowChecking.None;
+            AddressLabels asmLabels = new AddressLabels();
+            asm.Labels = asmLabels;
+            asm.RequireColonOnLabels = false;
+            asm.RequireDotOnDirectives = false;
+            asm.PhaseComplete += new EventHandler<Assembler.PhaseEventArgs>(asm_PhaseComplete);
+            asm.PhaseStarted += new EventHandler<Assembler.PhaseEventArgs>(asm_PhaseStarted);
+            SetAssemblerOptions(asm);
 
-";
-    [JSExport]
-    internal static byte[] Greeting(string source)
-    {
-        Assembler asm = new Assembler("test.ips", source, fileSystem);
-        asm.OverflowChecking = switches.Checking ?? OverflowChecking.None;
-        AddressLabels asmLabels = new AddressLabels();
-        asm.Labels = asmLabels;
-        asm.RequireColonOnLabels = false;
-        asm.RequireDotOnDirectives = false;
-        asm.PhaseComplete += new EventHandler<Assembler.PhaseEventArgs>(asm_PhaseComplete);
-        asm.PhaseStarted += new EventHandler<Assembler.PhaseEventArgs>(asm_PhaseStarted);
-        SetAssemblerOptions(asm);
-
-        var output = asm.Assemble();
-        var ipsFile = CreateIPSFile(output, asm.GetPatchSegments());
-        return ipsFile;
-    }
+            var output = asm.Assemble();
+            var ipsFile = CreateIPSFile(output, asm.GetPatchSegments());
+            return ipsFile;
+        }
 
         static ProgramSwitches switches;
         /// <summary>
@@ -104,8 +97,7 @@ sta $18
 
         private static byte[] RunAssembler() {
 
-            // Assembler asm = new Assembler(Path.GetFileName(sourceFile), fileSystem.GetFileText(sourceFile), fileSystem);
-            Assembler asm = new Assembler("test.ips", TestPatch, fileSystem);
+            Assembler asm = new Assembler(Path.GetFileName(sourceFile), fileSystem.GetFileText(sourceFile), fileSystem);
             asm.OverflowChecking = switches.Checking ?? OverflowChecking.None;
             AddressLabels asmLabels = new AddressLabels();
             asm.Labels = asmLabels;
