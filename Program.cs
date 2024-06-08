@@ -44,7 +44,7 @@ sta $18
         /// </summary>
         [STAThread]
         static void Main(string[] args) {
-
+            return;
             // syntax: (name may change)
             //     snarfblasm sourceFile [destFile] [-o | -os] [-i] [@offset]
             //
