@@ -325,7 +325,7 @@ penguinXOffset:
         source: `; Creates patch that replaces frames per drop related information
 
 .patch $0984
-    .db 1      ; level 30+
+    .db 1      ; level 29+
 
 .patch $099E
     .db 48     ; level 0
@@ -357,7 +357,6 @@ penguinXOffset:
     .db 2      ; level 26
     .db 2      ; level 27
     .db 2      ; level 28
-    .db 1      ; level 29
         `,
     },
 };
