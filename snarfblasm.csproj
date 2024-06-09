@@ -24,6 +24,7 @@
   <ItemGroup>
     <WasmExtraFilesToDeploy Include="index.html" />
     <WasmExtraFilesToDeploy Include="main.js" />
+    <WasmExtraFilesToDeploy Include="builtins.js" />
   </ItemGroup>
 
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.

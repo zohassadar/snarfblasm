@@ -2,15 +2,19 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 import { dotnet } from './dotnet.js';
-
+import { builtIns } from './builtins.js';
 const is_browser = typeof window != 'undefined';
 if (!is_browser) throw new Error(`Expected to be running in a browser`);
-
 
 try {
     const url = new URL(document.location.href);
     const fragment = url.hash.slice(1);
-    if (fragment) {
+    if (builtIns[fragment]) {
+        document.getElementById('filenameBox').value =
+            builtIns[fragment].filename;
+        document.getElementById('sourceBox').innerHTML =
+            builtIns[fragment].source;
+    } else if (fragment) {
         const [filename, source] = JSON.parse(atob(fragment));
         document.getElementById('filenameBox').value = filename;
         document.getElementById('sourceBox').innerHTML = source;
