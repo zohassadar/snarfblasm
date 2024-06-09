@@ -320,4 +320,44 @@ penguinXOffset:
         .byte   $94,$98,$9C,$A0,$A4
         `,
     },
+    levelspeeds: {
+        filename: 'level_speeds.ips',
+        source: `; Creates patch that replaces frames per drop related information
+
+.patch $0984
+    .db 1      ; level 30+
+
+.patch $099E
+    .db 48     ; level 0
+    .db 43     ; level 1
+    .db 38     ; level 2
+    .db 33     ; level 3
+    .db 28     ; level 4
+    .db 23     ; level 5
+    .db 18     ; level 6
+    .db 13     ; level 7
+    .db 8      ; level 8
+    .db 6      ; level 9
+    .db 5      ; level 10
+    .db 5      ; level 11
+    .db 5      ; level 12
+    .db 4      ; level 13
+    .db 4      ; level 14
+    .db 4      ; level 15
+    .db 3      ; level 16
+    .db 3      ; level 17
+    .db 3      ; level 18
+    .db 2      ; level 19
+    .db 2      ; level 20
+    .db 2      ; level 21
+    .db 2      ; level 22
+    .db 2      ; level 23
+    .db 2      ; level 24
+    .db 2      ; level 25
+    .db 2      ; level 26
+    .db 2      ; level 27
+    .db 2      ; level 28
+    .db 1      ; level 29
+        `,
+    },
 };
